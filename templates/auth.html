@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Parser App</title>
+        <link rel="stylesheet" href="/static/auth_styles.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet"
+        />
+    </head>
+    <body>
+
+        <h1 class="title-text">Войти в аккаунт</h1>
+        <div class="container">
+            {% block content %}
+            {% if error %}
+            <div class="user_error">
+                <p class="user_error_text">{{ error }}</p>
+            </div>
+            {% elif accept_user_register_text %}
+            <div class="accept_user_register">
+                {{ accept_user_register_text }}
+            </div>
+            {% endif %}
+            {% endblock %}
+            <div class="row">
+                <form class="row-form" action="/login/user" method="post">
+                    <input
+                        class="registration_inputs"
+                        type="text"
+                        required
+                        name="username"
+                        id="username"
+                        placeholder="email"
+                    />
+                    <input
+                        type="text"
+                        required
+                        class="registration_inputs"
+                        name="password"
+                        id="password"
+                        placeholder="password"
+                    />
+                    <button type="submit" class="reg-button" >Войти</button>
+                    <p class="auth_text">
+                        Нет аккаунта?
+                        <a href="/register" class="go_auth">Зарегистрироваться</a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
