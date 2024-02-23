@@ -18,8 +18,8 @@ app.include_router(auth_router)
 
 
 @app.post('/')
-async def regir(request: Request):
-    return request.headers
+async def redir(token=Depends(get_current_user)):
+    return token
 
 
 @app.get('/register')

@@ -45,4 +45,4 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
                           'error': error}
         )
     token = create_access_token(user.email, user.id, timedelta(minutes=1))
-    return Token(token_type='bearer', access_token=token)
+    return RedirectResponse('/')
