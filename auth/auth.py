@@ -36,7 +36,7 @@ async def create_user(request: Request, email: str = Form(), password: str = For
     )
 
 
-@router.post('/login/user/', response_model=Token)
+@router.post('/login/token', response_model=Token)
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], request: Request):
     user, error = authenticate_user(bcrypt_context, form_data.username, form_data.password).values()
     if not user:
@@ -45,4 +45,4 @@ async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm,
                           'error': error}
         )
     token = create_access_token(user.email, user.id, timedelta(minutes=1))
-    return RedirectResponse('/')
+    return {"access_token": token, 'token_type': 'bearer'}

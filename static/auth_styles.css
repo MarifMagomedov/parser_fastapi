@@ -9,9 +9,7 @@ html {
     font-optical-sizing: auto;
     font-weight: 15;
     font-style: normal;
-    
 }
-
 
 .title-text {
     font-family: Montserrat;
@@ -20,7 +18,7 @@ html {
     color: #000;
     text-align: center;
     margin-top: 225px;
-    margin-bottom: 30px;
+    margin-bottom: 50px;
 }
 
 .registration_inputs {
@@ -115,9 +113,9 @@ input {
     font-size: 16px;
     color: #000;
     font-weight: 400;
-    display: flex
-    height:45px;
-    width: 330px
+    display: flex;
+    height: 45px;
+    width: 330px;
 }
 
 .accept_user_register {
@@ -130,7 +128,35 @@ input {
     border: 0px;
     align-self: center;
     padding: 15px 44px;
-    background-color: #D1FF96;
+    background-color: #d1ff96;
     align-items: center;
     margin-bottom: 30px;
+}
+
+#megamarket_button {
+    background-color: #d1ff96;
+    font-weight: 400;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#yandex_button {
+    background-color: #f796ff;
+    font-weight: 400;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#dns_button {
+    background-color: #FFDD9A;
+    font-weight: 400;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+#mvideo_button {
+    background-color: #ff7880;
+    font-weight: 400;
+    font-size: 22px;
+    cursor: pointer;
 }

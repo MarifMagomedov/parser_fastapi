@@ -12,21 +12,21 @@ from database.database_main import Database
 from datetime import timedelta, datetime
 
 
-oauth2_bearer = OAuth2PasswordBearer(tokenUrl='token')
+oauth2_bearer = OAuth2PasswordBearer(tokenUrl='/login/token')
 config = load_auth_config()
 db = Database()
 
 
-def authenticate_user(bcrypt_context: CryptContext, email: str, password: str):
+def authenticate_user(bcrypt_context: CryptContext, email: str, password: str) -> dict:
     user = db.check_user_in_base(email, get_user=True)
-    request = {'user': '', 'error': ''}
+    user_data = {'user': '', 'error': ''}
     if not user:
-        request.update({'error': 'Пользователя с такой почтой не существует!'})
+        user_data.update({'error': 'Пользователя с такой почтой не существует!'})
     elif not bcrypt_context.verify(password, user.hashed_password):
-        request.update({'error': 'Вы ввели неправильный пароль!'})
+        user_data.update({'error': 'Вы ввели неправильный пароль!'})
     else:
-        request.update({'user': user})
-    return request
+        user_data.update({'user': user})
+    return user_data
 
 
 def create_access_token(username: str, user_id: int, expires_delta: timedelta):
