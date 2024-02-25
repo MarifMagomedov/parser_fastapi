@@ -1,7 +1,4 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker
-from config import load_database_config
-from pydantic import BaseModel
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
 class Base(DeclarativeBase):
@@ -15,14 +12,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(primary_key=True)
     hashed_password: Mapped[str]
     telegram: Mapped[str]
+    user_agent: Mapped[str]
+    token: Mapped[str] = mapped_column(nullable=True)
+    is_active: Mapped[bool] = mapped_column(default=False)
 
-
-class DatabaseConnect:
-    def __init__(self):
-        self.config = load_database_config()
-        self.engine = create_engine(
-            url=f"postgresql+psycopg://{self.config.user}:{self.config.password}"
-                f"@{self.config.host}:{self.config.port}/{self.config.name}",
-            echo=False
-        )
-        self.session_factory = sessionmaker(self.engine)

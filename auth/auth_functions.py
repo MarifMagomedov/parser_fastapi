@@ -1,5 +1,4 @@
 from typing import Annotated
-
 from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
@@ -17,8 +16,8 @@ config = load_auth_config()
 db = Database()
 
 
-def authenticate_user(bcrypt_context: CryptContext, email: str, password: str) -> dict:
-    user = db.check_user_in_base(email, get_user=True)
+async def authenticate_user(bcrypt_context: CryptContext, email: str, password: str) -> dict:
+    user = db.get_user_data(email)
     user_data = {'user': '', 'error': ''}
     if not user:
         user_data.update({'error': 'Пользователя с такой почтой не существует!'})
@@ -29,16 +28,14 @@ def authenticate_user(bcrypt_context: CryptContext, email: str, password: str) -
     return user_data
 
 
-def create_access_token(username: str, user_id: int, expires_delta: timedelta):
+async def create_access_token(username: str, user_id: int, expires_delta: timedelta) -> jwt:
     encode = {'sub': username, 'id': user_id}
     expires = datetime.utcnow() + expires_delta
     encode.update({'exp': expires})
     return jwt.encode(encode, config.secret_key, algorithm=config.algorithm)
 
 
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_bearer)],
-):
+async def get_current_user(token: str) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -51,7 +48,7 @@ async def get_current_user(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    user = db.check_user_in_base(email)
+    user = db.get_user_data(email)
     if not user:
         raise credentials_exception
     return user

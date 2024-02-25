@@ -45,7 +45,7 @@
                         id="password"
                         placeholder="password"
                     />
-                    <button type="submit" class="reg-button" >Войти</button>
+                    <button type="submit" class="reg-button" onclick="functionToExecute()">Войти</button>
                     <p class="auth_text">
                         Нет аккаунта?
                         <a href="/register" class="go_auth">Зарегистрироваться</a>
@@ -54,4 +54,27 @@
             </div>
         </div>
     </body>
+    <script>
+<!--        function functionToExecute() {-->
+<!--        const loginForm = document.querySelector(".row-form")-->
+
+<!--        loginForm.addEventListener("submit", (e) => {-->
+<!--          e.preventDefault()-->
+
+<!--          const formData = new FormData(loginForm)-->
+<!--            console.log(formData)-->
+<!--          fetch("http://localhost:8000/login/token", {-->
+<!--          mode: 'no-cors',-->
+<!--            method: "POST",-->
+<!--            body: formData,-->
+<!--          })-->
+<!--          .then((res) => res.json())-->
+<!--          .then((token) => {-->
+<!--            console.log("Token", token)-->
+<!--            // window.location.href = "/"-->
+<!--          })-->
+<!--          .catch((err) => {-->
+<!--            console.log("Error", err)-->
+<!--          })})}-->
+    </script>
 </html>

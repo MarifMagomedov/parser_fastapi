@@ -1,7 +1,6 @@
 from typing import Annotated
-
 import uvicorn
-from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi import FastAPI, Request, Depends
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from auth.auth import router as auth_router
@@ -13,19 +12,19 @@ db = Database()
 
 templates = Jinja2Templates(directory='templates')
 app.mount("/static", StaticFiles(directory="static"), name="static")
-user_dependency = Annotated[dict, Depends(get_current_user)]
+
 
 app.include_router(auth_router)
 
 
 @app.get('/')
-async def auth_successful(user: user_dependency):
-    if user is None:
-        raise HTTPException(
-            status_code=401,
-            detail='Auth failed'
-        )
-    return {'User': user}
+async def parsers_menu(request: Request):
+    user_token = db.get_user_data(user_agent=request.headers['User-Agent']).token
+    user_token_active = await get_current_user(user_token)
+    if user_token_active:
+        return templates.TemplateResponse('parsers_menu.html', {'request': request})
+    else:
+        return {'detail': 'Not login'}
 
 
 @app.get('/login')

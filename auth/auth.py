@@ -1,31 +1,31 @@
 from datetime import timedelta
-from fastapi import APIRouter, Depends, HTTPException, Request, Form
+from fastapi import APIRouter, Depends, Request, Form
 from fastapi.responses import RedirectResponse
 from typing import Annotated
 from starlette import status
 from passlib.context import CryptContext
-from database.database_main import Database
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from fastapi.templating import Jinja2Templates
-from auth.schemas import Token
+
 from auth.auth_functions import authenticate_user, create_access_token
+from database.database_main import Database
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.templating import Jinja2Templates
 
 router = APIRouter()
 
 db = Database()
-
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 templates = Jinja2Templates(directory='templates')
 
 
-@router.post('/register/user/', status_code=status.HTTP_201_CREATED)
+@router.post('/register/successful', status_code=status.HTTP_201_CREATED)
 async def create_user(request: Request, email: str = Form(), password: str = Form(), telegram: str = Form()):
-    user = db.check_user_in_base(email)
+    user = db.get_user_data(email)
     if not user:
         db.create_user(
             email=email,
             password=bcrypt_context.hash(password),
-            telegram=telegram
+            telegram=telegram,
+            user_agent=request.headers['User-Agent']
         )
         return templates.TemplateResponse('auth.html', {'request': request,
                                                         'accept_user_register_text': 'Вы успешно зарегистрировались! '
@@ -36,13 +36,14 @@ async def create_user(request: Request, email: str = Form(), password: str = For
     )
 
 
-@router.post('/login/token', response_model=Token)
+@router.post('/login/token')
 async def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], request: Request):
-    user, error = authenticate_user(bcrypt_context, form_data.username, form_data.password).values()
+    user, error = (await authenticate_user(bcrypt_context, form_data.username, form_data.password)).values()
     if not user:
         return templates.TemplateResponse(
             'auth.html', {'request': request,
                           'error': error}
         )
-    token = create_access_token(user.email, user.id, timedelta(minutes=1))
-    return {"access_token": token, 'token_type': 'bearer'}
+    token = await create_access_token(user.email, user.id, timedelta(days=1))
+    db.update_user_token(token, user.email)
+    return RedirectResponse()

@@ -1,39 +1,56 @@
-from database.models import DatabaseConnect, Base, User
-from sqlalchemy import select
+from sqlalchemy.orm import sessionmaker
+from config import load_database_config
+from database.models import Base, User
+from sqlalchemy import select, create_engine, update
 
 
-class Database(DatabaseConnect):
+class Database:
+    def __init__(self):
+        self.config = load_database_config()
+        self.engine = create_engine(
+            url=f"postgresql+psycopg://{self.config.user}:{self.config.password}"
+                f"@{self.config.host}:{self.config.port}/{self.config.name}",
+            echo=False
+        )
+        self.session_factory = sessionmaker(self.engine)
+
     def create_tables(self) -> None:
         Base.metadata.drop_all(self.engine)
         Base.metadata.create_all(self.engine)
 
-    def check_user_in_base(self, email: str, get_user: bool = False) -> bool | User:
+    def get_user_data(self, email: str = None, user_agent: str = False) -> User:
         with self.session_factory() as session:
-            if get_user:
-                select_user_query = select(User).where(User.email == email)
+            if user_agent:
+                select_user_query = select(User).where(User.user_agent == user_agent)
                 result = session.execute(select_user_query).scalar()
             else:
-                select_user_query = select(1).where(User.email == email)
+                select_user_query = select(User).where(User.email == email)
                 result = session.execute(select_user_query).scalar()
         return result
 
-    def __call__(self):
-        self.create_tables()
-
-    def create_user(self, email: str, password: str, telegram: str) -> None:
+    def create_user(self, email: str, password: str, telegram: str, user_agent: str) -> None:
         with self.session_factory() as session:
             user = User(
                 email=email,
                 hashed_password=password,
-                telegram=telegram
+                telegram=telegram,
+                user_agent=user_agent
             )
             session.add(user)
             session.flush()
             session.commit()
 
-    def select_all_users(self) -> list[User]:
+    def update_user_token(self, new_token: str, email: str) -> None:
         with self.session_factory() as session:
-            query = select(User)
-            result = session.execute(query)
-            users = result.scalars().all()
-            return users
+            query = update(
+                User
+            ).values(
+                {'token': new_token}
+            ).filter_by(
+                email=email
+            )
+            session.execute(query)
+            session.commit()
+
+    def __call__(self):
+        self.create_tables()
