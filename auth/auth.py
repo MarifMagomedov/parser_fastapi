@@ -1,3 +1,4 @@
+import time
 from datetime import timedelta
 from fastapi import APIRouter, Request, Form, Response
 from fastapi.responses import RedirectResponse
@@ -8,6 +9,7 @@ from fastapi.templating import Jinja2Templates
 
 from auth.auth_functions import authenticate_user, create_access_token
 from database.database_main import database as db
+from database.redis_main import RedisTools
 
 
 router = APIRouter()
@@ -49,5 +51,5 @@ async def login_for_access_token(
                           'error': error}
         )
     token = await create_access_token(user.email, user.id, timedelta(minutes=1))
-    response.set_cookie(key='Authorization', value=token)
-    return True
+    RedisTools.set_data('Authorization', token)
+    return RedirectResponse('/market/choose_market', headers={'Authorization': token})

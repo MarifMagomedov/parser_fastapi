@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="/static/auth_styles.css" />
+        <link rel="stylesheet" href="/static/styles.css" />
         <link
             href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet"
@@ -13,10 +13,44 @@
     <body>
         <h1 class="title-text">Выберите сайт для парсинга</h1>
         <div class="container">
-            <div class="user_error" id="megamarket_button">Мегамаркет</div>
-            <div class="user_error" id="yandex_button">Яндекс.Маркет</div>
-            <div class="user_error" id="dns_button">ДНС</div>
-            <div class="user_error" id="mvideo_button">Мвидео</div>
+            <button
+                value="megamrket"
+                class="user_error"
+                id="megamarket_button"
+                onclick="chooseMarket(this)"
+            >
+                Мегамаркет
+            </button>
+            <button
+                value="yandex.market"
+                class="user_error"
+                id="yandex_button"
+                onclick="chooseMarket(this)"
+            >
+                Яндекс.Маркет
+            </button>
+            <button
+                value="dns"
+                class="user_error"
+                id="dns_button"
+                onclick="chooseMarket(this)"
+            >
+                ДНС
+            </button>
+            <button
+                value="mvideo"
+                class="user_error"
+                id="mvideo_button"
+                onclick="chooseMarket(this)"
+            >
+                Мвидео
+            </button>
         </div>
     </body>
+    <script>
+        const chooseMarket = (objButton) => {
+            console.log(objButton.value);
+            window.location.href = `/market/choose_market/${objButton.value}`;
+        };
+    </script>
 </html>
