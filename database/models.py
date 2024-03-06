@@ -12,7 +12,4 @@ class User(Base):
     email: Mapped[str] = mapped_column(primary_key=True)
     hashed_password: Mapped[str]
     telegram: Mapped[str]
-    user_agent: Mapped[str]
     token: Mapped[str] = mapped_column(nullable=True)
-    is_active: Mapped[bool] = mapped_column(default=False)
-
