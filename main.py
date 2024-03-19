@@ -9,6 +9,7 @@ from auth.auth import router as auth_router
 from auth.auth_functions import get_current_user
 from database.database_main import database as db
 from market.market import router as market_router
+from database.redis_main import RedisTools
 
 
 app = FastAPI()
@@ -22,19 +23,16 @@ app.include_router(auth_router)
 app.include_router(market_router)
 
 
+@app.get('/')
+async def main_page():
+    if RedisTools.get_data('Authorization'):
+        return RedirectResponse('/market/choose_market')
+    return RedirectResponse('/login')
+
+
 @app.on_event("startup")
 async def startup():
     db.create_tables()
-
-
-@app.get('/login')
-async def login_page(request: Request):
-    return templates.TemplateResponse('auth.html', {'request': request})
-
-
-@app.get('/register')
-async def register_page(request: Request):
-    return templates.TemplateResponse('registration.html', {'request': request})
 
 
 @app.exception_handler(status.HTTP_401_UNAUTHORIZED)

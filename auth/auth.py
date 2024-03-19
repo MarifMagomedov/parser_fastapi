@@ -12,11 +12,23 @@ from database.database_main import database as db
 from database.redis_main import RedisTools
 
 
-router = APIRouter()
+router = APIRouter(
+    tags=['/auth']
+)
 
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 templates = Jinja2Templates(directory='templates')
+
+
+@router.get('/login')
+async def login_page(request: Request):
+    return templates.TemplateResponse('auth.html', {'request': request})
+
+
+@router.get('/register')
+async def register_page(request: Request):
+    return templates.TemplateResponse('registration.html', {'request': request})
 
 
 @router.post('/register/successful', status_code=status.HTTP_201_CREATED)
@@ -50,6 +62,6 @@ async def login_for_access_token(
             'auth.html', {'request': request,
                           'error': error}
         )
-    token = await create_access_token(user.email, user.id, timedelta(minutes=1))
+    token = await create_access_token(user.email, user.id, timedelta(hours=1))
     RedisTools.set_data('Authorization', token)
     return RedirectResponse('/market/choose_market', headers={'Authorization': token})

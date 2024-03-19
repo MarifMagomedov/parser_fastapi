@@ -6,7 +6,7 @@ class RedisTools:
     redis = Redis(host='localhost', port=6379)
 
     @classmethod
-    def set_data(cls, key: str, value: str) -> None:
+    def set_data(cls, key: str, value) -> None:
         cls.redis.set(key, value)
 
     @classmethod
@@ -16,3 +16,7 @@ class RedisTools:
     @classmethod
     def get_keys(cls):
         return cls.redis.keys()
+
+    @classmethod
+    def clear(cls):
+        cls.redis.flushdb()
